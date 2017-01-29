@@ -1,4 +1,4 @@
-package com.example.wds.myapplication;
+    package com.example.wds.myapplication;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -22,7 +22,22 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gridview = (GridView) findViewById(R.id.gridview);
-
+        if (!MyUtils.isWifi(this)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("初次使用会从网络下载大概5MB的图片，确认要下载吗？");
+            builder.setTitle("注意");
+            builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mCanGetBitmapFromNetWork = true;
+                    mImageAdapter.notifyDataSetChanged();
+                }
+            });
+            builder.setNegativeButton("否", null);
+            builder.show();
+        } else {
+            mCanGetBitmapFromNetWork = true;
+        }
 
         mImageAdapter = new ImageAdapter(this,mCanGetBitmapFromNetWork);
         gridview.setAdapter(mImageAdapter);
