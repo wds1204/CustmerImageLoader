@@ -29,8 +29,7 @@ ImageLoader的实现;Bitmap的高效加载方式、LruCache以及DiskLruCache
             Log.d(TAG, "loadBitmapFromDiskCache ,bitmap:" + bitmap);
             if (bitmap != null) {
                 Log.d(TAG, "loadBitmapFromDiskCache ,url:" + url);
-                return bitmap;
-            }
+                return bitmap;            }
             Log.d(TAG, "loadBitmapFromHttp111111");
             //第三步：网络拉取（当从网络下载图片是，通过一个文件输出流写入在系统文件）
             bitmap = loadBitmapFromHttp(url, reqWidth, reqHeight);
@@ -41,7 +40,6 @@ ImageLoader的实现;Bitmap的高效加载方式、LruCache以及DiskLruCache
         }
 
         if (bitmap != null && !mIsDiskLruCacheCreated) {
-
             bitmap = downLoadBitmapFromUrl(url);
         }
         return bitmap;
@@ -78,7 +76,8 @@ ImageLoader的实现;Bitmap的高效加载方式、LruCache以及DiskLruCache
         return bitmap;
     }
     
-### 网络拉取： 
+### 异步加载： 
+
       采用线程池和Handler来提供ImageLoaderd的
     
      /**
@@ -93,11 +92,7 @@ ImageLoader的实现;Bitmap的高效加载方式、LruCache以及DiskLruCache
      */
     public void bindBitmap(final String url, final ImageView imageView, final int reqWidth, final int reqHeight) {
         imageView.setTag(TAG_KEY_URL, url);
-//        Bitmap bitmap = loadBitmapFromMemCache(url);
-//        if (bitmap != null) {
-//            imageView.setImageBitmap(bitmap);
-//            return;
-//        }
+
         Runnable loadBitmapTask = new Runnable() {
             @Override
             public void run() {
@@ -115,3 +110,19 @@ ImageLoader的实现;Bitmap的高效加载方式、LruCache以及DiskLruCache
         THREAD_POOL_EXCUTOR.execute(loadBitmapTask);
 
     }
+    
+     //采用主线程的Looper来构造对象，这样使得Imageloader可以再主线程中构造了，
+    // 另外为了解决View的复用所导致的列表错位问题，再给Imageview设置图片之前都会检查他的url有没有发生变化，
+    private Handler mMainHandler = new Handler(Looper.getMainLooper()) {
+        public void handleMessage(Message msg) {
+            LoaderResult result = (LoaderResult) msg.obj;
+            ImageView imageView = result.imageView;
+            String url = (String) imageView.getTag(TAG_KEY_URL);
+            Log.d(TAG, "mMainHandler url：" + url + ",result url:" + result.url);
+            if (url.equals(result.url)) {
+                imageView.setImageBitmap(result.bitmap);
+            } else {
+                Log.d(TAG, "set image bitmap,but url has changed, ignored!");
+            }
+        }
+    };
