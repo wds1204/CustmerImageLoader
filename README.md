@@ -42,8 +42,8 @@ ImageLoader的实现;Bitmap的高效加载方式、LruCache以及DiskLruCache
             bitmap = downLoadBitmapFromUrl(url);
         }
         return bitmap;
-    }
-     / **
+    }
+     / **
  DisLruche的缓存添加操作是通过Editor完成的，Editor表示一个缓存对象的编辑对象，用图片缓存作为例子，用获取图片的url所对应的key,然后根据key就可以通过editor()来获取Editor对象，如果这个缓存对象正在编辑，那么edit（）会返回null，及这个DiskLruche不允许同时编辑一个缓存对象。
    通过key,获得了Editor对象，如果当前不存在其他Editor对象，那么editor（）就会返回一个新的Editor对象。
     
@@ -74,9 +74,8 @@ ImageLoader的实现;Bitmap的高效加载方式、LruCache以及DiskLruCache
 
         return bitmap;
     }
-    
+    
 ### 异步加载： 
-
       采用线程池和Handler来提供ImageLoaderd的
     
      /**
@@ -124,4 +123,6 @@ ImageLoader的实现;Bitmap的高效加载方式、LruCache以及DiskLruCache
                 Log.d(TAG, "set image bitmap,but url has changed, ignored!");
             }
         }
-    };
+    };
+###  END
+最后通过一个GridView加载图片图片的例子来演示ImageLoader的使用，其中做了一些优化在手指滑动的时候不加载图片 onScrollStateChanged，还做一些网络的判断
