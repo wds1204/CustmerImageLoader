@@ -22,13 +22,12 @@ ImageLoader的实现;Bitmap的高效加载方式、LruCache以及DiskLruCache
         if (bitmap != null) {
             Log.d(TAG, "loadBitmapFromMemCache ,url:" + url);
             return bitmap;        }
-
         try {
-*            //第二步：磁盘缓存中获取（在磁盘缓存的查找和添加比较复杂）
-            bitmap = loadBitmapFromDiskCache(url, reqWidth, reqHeight);
-            Log.d(TAG, "loadBitmapFromDiskCache ,bitmap:" + bitmap);
-            if (bitmap != null) {
-                Log.d(TAG, "loadBitmapFromDiskCache ,url:" + url);
+    //第二步：磁盘缓存中获取（在磁盘缓存的查找和添加比较复杂）
+         bitmap = loadBitmapFromDiskCache(url, reqWidth, reqHeight);
+         Log.d(TAG, "loadBitmapFromDiskCache ,bitmap:" + bitmap);
+         if (bitmap != null) {
+ 
                 return bitmap;            }
             Log.d(TAG, "loadBitmapFromHttp111111");
             //第三步：网络拉取（当从网络下载图片是，通过一个文件输出流写入在系统文件）
